@@ -255,7 +255,7 @@ class DTLSRecordLayer
                     }
                     else
                     {
-                        StringBuffer sb = new StringBuffer();
+                        StringBuilder sb = new StringBuilder();
                         sb.append("BC-DTLS-ALERT (lenght=").append(plaintext.length).append(") ");
                         for(int i = 0; i < plaintext.length; i++)
                         {
