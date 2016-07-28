@@ -253,6 +253,16 @@ class DTLSRecordLayer
                             closeTransport();
                         }
                     }
+                    else
+                    {
+                        StringBuffer sb = new StringBuffer();
+                        sb.append("BC-DTLS-ALERT (lenght=").append(plaintext.length).append(") ");
+                        for(int i = 0; i < plaintext.length; i++)
+                        {
+                            sb.append("[").append(i).append("]=\"").append(plaintext[i]).append("\"; ");
+                        }
+                        System.out.println(sb.toString());
+                    }
 
                     continue;
                 }
