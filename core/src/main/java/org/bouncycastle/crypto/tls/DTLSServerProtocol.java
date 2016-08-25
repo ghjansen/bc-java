@@ -71,6 +71,7 @@ public class DTLSServerProtocol
         }
         catch (IOException e)
         {
+            System.out.println(state.timeoutDump());
             recordLayer.fail(AlertDescription.internal_error);
             throw e;
         }
@@ -704,5 +705,25 @@ public class DTLSServerProtocol
         CertificateRequest certificateRequest = null;
         short clientCertificateType = -1;
         Certificate clientCertificate = null;
+
+        public String timeoutDump() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("BC-DTLS-TIMEOUT (ServerHandshakeState) \n");
+            sb.append("offeredCipherSuites = ")
+                    .append(offeredCipherSuites == null ? "null" : java.util.Arrays.toString(offeredCipherSuites)).append("\n");
+            sb.append("offeredCompressionMethods = ")
+                    .append(offeredCompressionMethods == null ? "null" : java.util.Arrays.toString(offeredCompressionMethods))
+                    .append("\n");
+            sb.append("clientExtensions = ").append(clientExtensions == null ? "null" : clientExtensions.toString())
+                    .append("\n");
+            sb.append("serverExtensions = ").append(serverExtensions == null ? "null" : serverExtensions.toString())
+                    .append("\n");
+            sb.append("resumedSession = ").append(resumedSession).append("\n");
+            sb.append("secure_renegotiation = ").append(secure_renegotiation).append("\n");
+            sb.append("allowCertificateStatus = ").append(allowCertificateStatus).append("\n");
+            sb.append("expectSessionTicket = ").append(expectSessionTicket).append("\n");
+            sb.append("clientCertificateType = ").append(clientCertificateType).append("\n");
+            return sb.toString();
+        }
     }
 }

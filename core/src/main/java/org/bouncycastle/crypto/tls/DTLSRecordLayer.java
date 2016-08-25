@@ -333,6 +333,7 @@ class DTLSRecordLayer
             catch (IOException e)
             {
                 // NOTE: Assume this is a timeout for the moment
+                System.out.println(e.getMessage() + "\n" + e.getStackTrace());
                 throw e;
             }
         }

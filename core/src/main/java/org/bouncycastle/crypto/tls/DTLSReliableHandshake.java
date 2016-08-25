@@ -205,6 +205,7 @@ class DTLSReliableHandshake
             catch (IOException e)
             {
                 // NOTE: Assume this is a timeout for the moment
+                System.out.println(timeoutDump());
             }
 
             resendOutboundFlight();
@@ -215,6 +216,30 @@ class DTLSReliableHandshake
              */
             readTimeoutMillis = Math.min(readTimeoutMillis * 2, 60000);
         }
+    }
+
+    private String timeoutDump() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("BC-DTLS-TIMEOUT (DTLSReliableHandshake) \n");
+        sb.append("currentInboundFlight = ").append(currentInboundFlight == null ? "null" : currentInboundFlight.toString())
+                .append("\n");
+        sb.append("previousInboundFlight = ").append(previousInboundFlight == null ? "null" : previousInboundFlight.toString())
+                .append("\n");
+        sb.append("outboundFlight = ").append(outboundFlight == null ? "null" : outboundFlight.toString()).append("\n");
+        sb.append("sending = ").append(sending).append("\n");
+        sb.append("message_seq = ").append(message_seq).append("\n");
+        sb.append("next_receive_seq = ").append(next_receive_seq).append("\n");
+        if (handshakeHash != null) {
+            try {
+                DeferredHash dh = (DeferredHash) handshakeHash;
+                sb.append("handshakeHash = ").append(dh.timeoutDump());
+            } catch (Exception e) {
+                sb.append("handshakeHash = (cast error!) \n");
+            }
+        } else {
+            sb.append("handshakeHash = null \n");
+        }
+        return sb.toString();
     }
 
     void finish()

@@ -27,6 +27,15 @@ class DeferredHash
         this.prfHashAlgorithm = null;
     }
 
+    public String timeoutDump() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("BC-DTLS-TIMEOUT (DeferredHash) \n");
+        sb.append("buf = ").append(buf == null ? "null" : buf.toString()).append("\n");
+        sb.append("hashes = ").append(hashes == null ? "null" : hashes.toString()).append("\n");
+        sb.append("prfHashAlgorithm = ").append(prfHashAlgorithm == null ? "null" : prfHashAlgorithm).append("\n");
+        return sb.toString();
+    }
+
     private DeferredHash(Short prfHashAlgorithm, Digest prfHash)
     {
         this.buf = null;
