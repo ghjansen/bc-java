@@ -236,6 +236,7 @@ class DTLSRecordLayer
                 {
                     if (plaintext.length == 2)
                     {
+                        alertDump(plaintext);
                         short alertLevel = plaintext[0];
                         short alertDescription = plaintext[1];
 
@@ -255,13 +256,7 @@ class DTLSRecordLayer
                     }
                     else
                     {
-                        StringBuilder sb = new StringBuilder();
-                        sb.append("BC-DTLS-ALERT (lenght=").append(plaintext.length).append(") ");
-                        for(int i = 0; i < plaintext.length; i++)
-                        {
-                            sb.append("[").append(i).append("]=\"").append(plaintext[i]).append("\"; ");
-                        }
-                        System.out.println(sb.toString());
+                        alertDump(plaintext);
                     }
 
                     continue;
@@ -337,6 +332,16 @@ class DTLSRecordLayer
                 throw e;
             }
         }
+    }
+    
+    private void alertDump(byte[] plaintext){
+        StringBuilder sb = new StringBuilder();
+        sb.append("BC-DTLS-ALERT (lenght=").append(plaintext.length).append(") ");
+        for(int i = 0; i < plaintext.length; i++)
+        {
+            sb.append("[").append(i).append("]=\"").append(plaintext[i]).append("\"; ");
+        }
+        System.out.println(sb.toString());
     }
 
     public void send(byte[] buf, int off, int len)
