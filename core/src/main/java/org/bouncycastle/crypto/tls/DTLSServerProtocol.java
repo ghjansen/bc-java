@@ -66,17 +66,19 @@ public class DTLSServerProtocol
         }
         catch (TlsFatalAlert fatalAlert)
         {
+            System.out.println(state.timeoutDump(fatalAlert));
             recordLayer.fail(fatalAlert.getAlertDescription());
             throw fatalAlert;
         }
         catch (IOException e)
         {
-            System.out.println(state.timeoutDump());
+            System.out.println(state.timeoutDump(e));
             recordLayer.fail(AlertDescription.internal_error);
             throw e;
         }
         catch (RuntimeException e)
         {
+            System.out.println(state.timeoutDump(e));
             recordLayer.fail(AlertDescription.internal_error);
             throw new TlsFatalAlert(AlertDescription.internal_error, e);
         }
@@ -219,7 +221,7 @@ public class DTLSServerProtocol
                     /*
                      * RFC 5246 If no suitable certificate is available, the client MUST send a
                      * certificate message containing no certificates.
-                     * 
+                     *
                      * NOTE: In previous RFCs, this was SHOULD instead of MUST.
                      */
                     throw new TlsFatalAlert(AlertDescription.unexpected_message);
@@ -316,13 +318,13 @@ public class DTLSServerProtocol
             {
                 throw new TlsFatalAlert(AlertDescription.internal_error);
             }
-    
+
             // TODO Read RFCs for guidance on the expected record layer version number
             // recordStream.setReadVersion(server_version);
             // recordStream.setWriteVersion(server_version);
             // recordStream.setRestrictReadVersion(true);
             state.serverContext.setServerVersion(server_version);
-    
+
             TlsUtils.writeVersion(state.serverContext.getServerVersion(), buf);
         }
 
@@ -600,7 +602,7 @@ public class DTLSServerProtocol
 
         /*
          * TODO[session-hash]
-         * 
+         *
          * draft-ietf-tls-session-hash-04 4. Clients and servers SHOULD NOT accept handshakes
          * that do not use the extended master secret [..]. (and see 5.2, 5.3)
          */
@@ -706,7 +708,7 @@ public class DTLSServerProtocol
         short clientCertificateType = -1;
         Certificate clientCertificate = null;
 
-        public String timeoutDump() {
+        public String timeoutDump(Exception e) {
             StringBuilder sb = new StringBuilder();
             sb.append("BC-DTLS-TIMEOUT (ServerHandshakeState) \n");
             sb.append("offeredCipherSuites = ")
@@ -722,7 +724,9 @@ public class DTLSServerProtocol
             sb.append("secure_renegotiation = ").append(secure_renegotiation).append("\n");
             sb.append("allowCertificateStatus = ").append(allowCertificateStatus).append("\n");
             sb.append("expectSessionTicket = ").append(expectSessionTicket).append("\n");
+            sb.append("certificateRequest = ").append(certificateRequest == null ? "null" : certificateRequest.timeoutDump());
             sb.append("clientCertificateType = ").append(clientCertificateType).append("\n");
+            sb.append(e.getMessage()).append("\n").append(e.getStackTrace()).append("\n");
             return sb.toString();
         }
     }

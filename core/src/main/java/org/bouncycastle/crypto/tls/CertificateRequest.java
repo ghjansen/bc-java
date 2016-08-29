@@ -155,4 +155,17 @@ public class CertificateRequest
 
         return new CertificateRequest(certificateTypes, supportedSignatureAlgorithms, certificateAuthorities);
     }
+    
+    public String timeoutDump() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("BC-DTLS-TIMEOUT (CertificateRequest) \n");
+        sb.append("certificateTypes = ")
+                .append(certificateTypes == null ? "null" : java.util.Arrays.toString(certificateTypes)).append("\n");
+        sb.append("supportedSignatureAlgorithms = ")
+                .append(supportedSignatureAlgorithms == null ? "null" : supportedSignatureAlgorithms.toString())
+                .append("\n");
+        sb.append("certificateAuthorities = ").append(certificateAuthorities == null ? "null" : certificateAuthorities.toString())
+                .append("\n");
+        return sb.toString();
+    }
 }

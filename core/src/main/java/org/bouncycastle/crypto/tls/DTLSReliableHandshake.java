@@ -205,7 +205,7 @@ class DTLSReliableHandshake
             catch (IOException e)
             {
                 // NOTE: Assume this is a timeout for the moment
-                System.out.println(timeoutDump());
+                System.out.println(timeoutDump(e));
             }
 
             resendOutboundFlight();
@@ -218,7 +218,7 @@ class DTLSReliableHandshake
         }
     }
 
-    private String timeoutDump() {
+    private String timeoutDump(Exception e) {
         StringBuilder sb = new StringBuilder();
         sb.append("BC-DTLS-TIMEOUT (DTLSReliableHandshake) \n");
         sb.append("currentInboundFlight = ").append(currentInboundFlight == null ? "null" : currentInboundFlight.toString())
@@ -233,12 +233,13 @@ class DTLSReliableHandshake
             try {
                 DeferredHash dh = (DeferredHash) handshakeHash;
                 sb.append("handshakeHash = ").append(dh.timeoutDump());
-            } catch (Exception e) {
+            } catch (Exception ex) {
                 sb.append("handshakeHash = (cast error!) \n");
             }
         } else {
             sb.append("handshakeHash = null \n");
         }
+        sb.append(e.getMessage()).append("\n").append(e.getStackTrace()).append("\n");
         return sb.toString();
     }
 
@@ -259,6 +260,7 @@ class DTLSReliableHandshake
              */
             retransmit = new DTLSHandshakeRetransmit()
             {
+                @Override
                 public void receivedHandshakeRecord(int epoch, byte[] buf, int off, int len)
                     throws IOException
                 {
