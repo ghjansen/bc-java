@@ -263,7 +263,6 @@ class DTLSReliableHandshake
              */
             retransmit = new DTLSHandshakeRetransmit()
             {
-                @Override
                 public void receivedHandshakeRecord(int epoch, byte[] buf, int off, int len)
                     throws IOException
                 {

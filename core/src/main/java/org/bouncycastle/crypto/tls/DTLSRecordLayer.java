@@ -58,6 +58,7 @@ class DTLSRecordLayer
 
     void setReadVersion(ProtocolVersion readVersion)
     {
+    	logger.info("Setting read version to " + readVersion.toString());
         this.readVersion = readVersion;
     }
 
@@ -132,7 +133,7 @@ class DTLSRecordLayer
     public int receive(byte[] buf, int off, int len, int waitMillis)
         throws IOException
     {
-        logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSRecordLayer.receive threadId="+Thread.currentThread().getId());
+        logger.info("BC-DTLS-TIMEOUT: Entered "+System.currentTimeMillis()+" DTLSRecordLayer.receive! threadId="+Thread.currentThread().getId());
         byte[] record = null;
 
         for (;;)
@@ -154,15 +155,18 @@ class DTLSRecordLayer
                 int received = receiveRecord(record, 0, receiveLimit, waitMillis);
                 if (received < 0)
                 {
+                	logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSRecordLayer.receive threadId="+Thread.currentThread().getId()+". Aborting read operation because no data was received!");
                     return received;
                 }
                 if (received < RECORD_HEADER_LENGTH)
                 {
+                	logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSRecordLayer.receive threadId="+Thread.currentThread().getId()+" dropping packet because data length < RECORD_HEADER_LENGTH");
                     continue;
                 }
                 int length = TlsUtils.readUint16(record, 11);
                 if (received != (length + RECORD_HEADER_LENGTH))
                 {
+                	logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSRecordLayer.receive threadId="+Thread.currentThread().getId()+" dropping packet because data length != (length + RECORD_HEADER_LENGTH)");
                     continue;
                 }
 
@@ -173,16 +177,21 @@ class DTLSRecordLayer
                 {
                 case ContentType.alert:
                     logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSRecordLayer.receive threadId="+Thread.currentThread().getId()+" ContentType=alert");
+                    break;
                 case ContentType.application_data:
                     logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSRecordLayer.receive threadId="+Thread.currentThread().getId()+" ContentType=application_data");
+                    break;
                 case ContentType.change_cipher_spec:
                     logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSRecordLayer.receive threadId="+Thread.currentThread().getId()+" ContentType=change_cipher_spec");
+                    break;
                 case ContentType.handshake:
                     logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSRecordLayer.receive threadId="+Thread.currentThread().getId()+" ContentType=handshake");
+                    break;
                 case ContentType.heartbeat:
                     logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSRecordLayer.receive threadId="+Thread.currentThread().getId()+" ContentType=heartbeat");
                     break;
                 default:
+                	logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSRecordLayer.receive threadId="+Thread.currentThread().getId()+" ContentType="+type);
                     // TODO Exception?
                     continue;
                 }
@@ -202,23 +211,27 @@ class DTLSRecordLayer
 
                 if (recordEpoch == null)
                 {
+                	logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSRecordLayer.receive threadId="+Thread.currentThread().getId()+" discarding packet because record epoch is unknown!");
                     continue;
                 }
 
                 long seq = TlsUtils.readUint48(record, 5);
                 if (recordEpoch.getReplayWindow().shouldDiscard(seq))
                 {
+                	logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSRecordLayer.receive threadId="+Thread.currentThread().getId()+" discarding packet with seq="+seq);
                     continue;
                 }
 
                 ProtocolVersion version = TlsUtils.readVersion(record, 1);
                 if (!version.isDTLS())
                 {
+                	logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSRecordLayer.receive threadId="+Thread.currentThread().getId()+" discarding packet with version="+version.toString());
                     continue;
                 }
 
                 if (readVersion != null && !readVersion.equals(version))
                 {
+                	logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSRecordLayer.receive threadId="+Thread.currentThread().getId()+" discarding packet because we're using "+readVersion.toString()+", not "+version.toString());
                     continue;
                 }
 
@@ -230,6 +243,7 @@ class DTLSRecordLayer
 
                 if (plaintext.length > this.plaintextLimit)
                 {
+                	logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSRecordLayer.receive threadId="+Thread.currentThread().getId()+" discarding packet because plaintextLimit exceeded: "+plaintext.length);
                     continue;
                 }
 
