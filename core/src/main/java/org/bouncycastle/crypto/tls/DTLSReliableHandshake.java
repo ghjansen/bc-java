@@ -5,11 +5,13 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
+import org.apache.log4j.Logger;
 
 import org.bouncycastle.util.Integers;
 
 class DTLSReliableHandshake
 {
+    final static Logger logger = Logger.getLogger(DTLSReliableHandshake.class);
     private final static int MAX_RECEIVE_AHEAD = 10;
 
     private final DTLSRecordLayer recordLayer;
@@ -82,6 +84,7 @@ class DTLSReliableHandshake
     Message receiveMessage()
         throws IOException
     {
+        logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSReliableHandshake.receiveMessage threadId="+Thread.currentThread().getId());
         if (sending)
         {
             sending = false;
@@ -205,7 +208,7 @@ class DTLSReliableHandshake
             catch (IOException e)
             {
                 // NOTE: Assume this is a timeout for the moment
-                System.out.println(timeoutDump(e));
+                logger.error(timeoutDump(e));
             }
 
             resendOutboundFlight();

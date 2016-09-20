@@ -1,10 +1,12 @@
 package org.bouncycastle.crypto.tls;
 
 import java.io.IOException;
+import org.apache.log4j.Logger;
 
 class DTLSRecordLayer
     implements DatagramTransport
 {
+    final static Logger logger = Logger.getLogger(DTLSRecordLayer.class);
     private static final int RECORD_HEADER_LENGTH = 13;
     private static final int MAX_FRAGMENT_LENGTH = 1 << 14;
     private static final long TCP_MSL = 1000L * 60 * 2;
@@ -130,6 +132,7 @@ class DTLSRecordLayer
     public int receive(byte[] buf, int off, int len, int waitMillis)
         throws IOException
     {
+        logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSRecordLayer.receive threadId="+Thread.currentThread().getId());
         byte[] record = null;
 
         for (;;)
@@ -169,10 +172,15 @@ class DTLSRecordLayer
                 switch (type)
                 {
                 case ContentType.alert:
+                    logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSRecordLayer.receive threadId="+Thread.currentThread().getId()+" ContentType=alert");
                 case ContentType.application_data:
+                    logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSRecordLayer.receive threadId="+Thread.currentThread().getId()+" ContentType=application_data");
                 case ContentType.change_cipher_spec:
+                    logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSRecordLayer.receive threadId="+Thread.currentThread().getId()+" ContentType=change_cipher_spec");
                 case ContentType.handshake:
+                    logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSRecordLayer.receive threadId="+Thread.currentThread().getId()+" ContentType=handshake");
                 case ContentType.heartbeat:
+                    logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSRecordLayer.receive threadId="+Thread.currentThread().getId()+" ContentType=heartbeat");
                     break;
                 default:
                     // TODO Exception?
@@ -328,7 +336,7 @@ class DTLSRecordLayer
             catch (IOException e)
             {
                 // NOTE: Assume this is a timeout for the moment
-                System.out.println(e.getMessage() + "\n" + e.getStackTrace());
+                logger.error(e.getMessage());
                 throw e;
             }
         }
@@ -341,7 +349,7 @@ class DTLSRecordLayer
         {
             sb.append("[").append(i).append("]=\"").append(plaintext[i]).append("\"; ");
         }
-        System.out.println(sb.toString());
+        logger.info(sb.toString());
     }
 
     public void send(byte[] buf, int off, int len)
@@ -466,6 +474,7 @@ class DTLSRecordLayer
     private int receiveRecord(byte[] buf, int off, int len, int waitMillis)
         throws IOException
     {
+        logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSRecordLayer.receiveRecord threadId="+Thread.currentThread().getId());
         if (recordQueue.available() > 0)
         {
             int length = 0;

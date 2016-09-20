@@ -53,6 +53,7 @@
         <pathelement location="${mail.jar.home}" />
         <pathelement location="${activation.jar.home}" />
         <pathelement location="${junit.jar.home}" />
+	<pathelement location="${log4j.jar.home}" />
     </path> 
 
     <target name="pack200-on" if="pack200.enabled">

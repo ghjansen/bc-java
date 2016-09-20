@@ -11,10 +11,12 @@ import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 import org.bouncycastle.crypto.util.PublicKeyFactory;
 import org.bouncycastle.util.Arrays;
+import org.apache.log4j.Logger;
 
 public class DTLSServerProtocol
     extends DTLSProtocol
 {
+    final static Logger logger = Logger.getLogger(DTLSServerProtocol.class);
     protected boolean verifyRequests = true;
 
     public DTLSServerProtocol(SecureRandom secureRandom)
@@ -35,6 +37,7 @@ public class DTLSServerProtocol
     public DTLSTransport accept(TlsServer server, DatagramTransport transport)
         throws IOException
     {
+        logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSServerProtocol.accept threadId="+Thread.currentThread().getId());
         if (server == null)
         {
             throw new IllegalArgumentException("'server' cannot be null");
@@ -66,19 +69,19 @@ public class DTLSServerProtocol
         }
         catch (TlsFatalAlert fatalAlert)
         {
-            System.out.println(state.timeoutDump(fatalAlert));
+            logger.error(state.timeoutDump(fatalAlert));
             recordLayer.fail(fatalAlert.getAlertDescription());
             throw fatalAlert;
         }
         catch (IOException e)
         {
-            System.out.println(state.timeoutDump(e));
+            logger.error(state.timeoutDump(e));
             recordLayer.fail(AlertDescription.internal_error);
             throw e;
         }
         catch (RuntimeException e)
         {
-            System.out.println(state.timeoutDump(e));
+            logger.error(state.timeoutDump(e));
             recordLayer.fail(AlertDescription.internal_error);
             throw new TlsFatalAlert(AlertDescription.internal_error, e);
         }
@@ -87,6 +90,7 @@ public class DTLSServerProtocol
     protected DTLSTransport serverHandshake(ServerHandshakeState state, DTLSRecordLayer recordLayer)
         throws IOException
     {
+        logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSServerProtocol.serverHandshake threadId="+Thread.currentThread().getId());
         SecurityParameters securityParameters = state.serverContext.getSecurityParameters();
         DTLSReliableHandshake handshake = new DTLSReliableHandshake(state.serverContext, recordLayer);
 
