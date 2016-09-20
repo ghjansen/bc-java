@@ -522,14 +522,17 @@ class DTLSRecordLayer
     private void sendRecord(short contentType, byte[] buf, int off, int len)
         throws IOException
     {
+    	logger.info("BC-DTLS-TIMEOUT: Entered "+System.currentTimeMillis()+" DTLSRecordLayer.sendRecord! threadId="+Thread.currentThread().getId());
         // Never send anything until a valid ClientHello has been received
         if (writeVersion == null)
         {
+        	logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSRecordLayer.sendRecord threadId="+Thread.currentThread().getId() +". Cancelling send because no writeVersion is specified!");
             return;
         }
 
         if (len > this.plaintextLimit)
         {
+        	logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSRecordLayer.sendRecord threadId="+Thread.currentThread().getId() +". Cancelling send because len > plaintextLimit!");
             throw new TlsFatalAlert(AlertDescription.internal_error);
         }
 
@@ -539,6 +542,7 @@ class DTLSRecordLayer
          */
         if (len < 1 && contentType != ContentType.application_data)
         {
+        	logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSRecordLayer.sendRecord threadId="+Thread.currentThread().getId() +". Cancelling send because Implementations MUST NOT send zero-length fragments!");
             throw new TlsFatalAlert(AlertDescription.internal_error);
         }
 
@@ -558,6 +562,7 @@ class DTLSRecordLayer
         TlsUtils.writeUint16(ciphertext.length, record, 11);
         System.arraycopy(ciphertext, 0, record, RECORD_HEADER_LENGTH, ciphertext.length);
 
+        logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSRecordLayer.sendRecord threadId="+Thread.currentThread().getId() +". Sending packet ("+contentType+") with length=" + record.length);
         transport.send(record, 0, record.length);
     }
 
