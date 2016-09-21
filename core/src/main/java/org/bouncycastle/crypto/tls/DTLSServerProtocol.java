@@ -37,7 +37,7 @@ public class DTLSServerProtocol
     public DTLSTransport accept(TlsServer server, DatagramTransport transport)
         throws IOException
     {
-        logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSServerProtocol.accept threadId="+Thread.currentThread().getId());
+        logger.trace("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSServerProtocol.accept threadId="+Thread.currentThread().getId());
         if (server == null)
         {
             throw new IllegalArgumentException("'server' cannot be null");
@@ -69,19 +69,19 @@ public class DTLSServerProtocol
         }
         catch (TlsFatalAlert fatalAlert)
         {
-            logger.error(state.timeoutDump(fatalAlert));
+            logger.trace(state.timeoutDump(fatalAlert));
             recordLayer.fail(fatalAlert.getAlertDescription());
             throw fatalAlert;
         }
         catch (IOException e)
         {
-            logger.error(state.timeoutDump(e));
+            logger.trace(state.timeoutDump(e));
             recordLayer.fail(AlertDescription.internal_error);
             throw e;
         }
         catch (RuntimeException e)
         {
-            logger.error(state.timeoutDump(e));
+            logger.trace(state.timeoutDump(e));
             recordLayer.fail(AlertDescription.internal_error);
             throw new TlsFatalAlert(AlertDescription.internal_error, e);
         }
@@ -90,7 +90,7 @@ public class DTLSServerProtocol
     protected DTLSTransport serverHandshake(ServerHandshakeState state, DTLSRecordLayer recordLayer)
         throws IOException
     {
-        logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSServerProtocol.serverHandshake threadId="+Thread.currentThread().getId());
+        logger.trace("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSServerProtocol.serverHandshake threadId="+Thread.currentThread().getId());
         SecurityParameters securityParameters = state.serverContext.getSecurityParameters();
         DTLSReliableHandshake handshake = new DTLSReliableHandshake(state.serverContext, recordLayer);
 

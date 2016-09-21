@@ -84,7 +84,7 @@ class DTLSReliableHandshake
     Message receiveMessage()
         throws IOException
     {
-        logger.info("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSReliableHandshake.receiveMessage threadId="+Thread.currentThread().getId());
+        logger.trace("BC-DTLS-TIMEOUT: "+System.currentTimeMillis()+" DTLSReliableHandshake.receiveMessage threadId="+Thread.currentThread().getId());
         if (sending)
         {
             sending = false;
@@ -208,7 +208,7 @@ class DTLSReliableHandshake
             catch (IOException e)
             {
                 // NOTE: Assume this is a timeout for the moment
-                logger.error(timeoutDump(e));
+                logger.trace(timeoutDump(e));
             }
 
             resendOutboundFlight();
